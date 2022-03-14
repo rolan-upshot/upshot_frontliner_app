@@ -14,36 +14,7 @@ export class AppComponent implements OnInit {
   password: string = "";
   checking: boolean = false;
 
-  constructor(private modalService: NgbModal, private loginService:LoginService) {
-  }
-
-  ngOnInit(): void {
-  }
-  get_directory_status(): string{
-    if (this.loginService.directory_is_ok()){
-      return "<span class='good-news'>Directory:ok</span>";
-    }
-    else{
-      return "<span class='bad-news'>Directory missing</span>";
-    }
-  }
-
-  disable_submit(): boolean {
-
-    if (this.email == "" || this.password == "") {
-      return true;
-    }
-
-    if (!this.checking) return false;
-    return false;
-
-  }
-
-  submit() {
-
-    this.loginService.login(this.email, this.password);
-
-  }
+  ngOnInit() { }
 }
 
 

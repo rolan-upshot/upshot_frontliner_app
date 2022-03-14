@@ -4,26 +4,12 @@
       <div class="col">
       </div>
       <div class="col-6">
-        Welcome to the Upshot <span style="color:red">Interim</span> Frontliner Webapp
-        <br>
-        <div [innerHTML]="get_directory_status()"></div>
-        <br>
-        <form>
-          <div class="mb-3">
-            <label for="email" class="form-label">Login</label>
-            <input [(ngModel)]="email" aria-describedby="emailHelp" class="form-control" id="email" type="email"
-                   name="email">
-            <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
-          </div>
-          <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input [(ngModel)]="password" class="form-control" id="password" type="password" name="password">
-          </div>
-        </form>
-        <button class="btn btn-primary" [disabled]="disable_submit()" (click)="submit()">Submit</button>
+          Welcome to the <span style="color:red">interim</span> Upshot frontliner app.
+          <router-outlet></router-outlet>
       </div>
       <div class="col">
       </div>
     </div>
   </div>
 </div>
+

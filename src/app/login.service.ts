@@ -1,9 +1,20 @@
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpClientModule} from '@angular/common/http';
-import {LoginComponent} from "./login/login.component";
+import {HttpClient, HttpClientModule, HttpHeaders} from '@angular/common/http';
+import {Observable} from "rxjs";
+type login_result = {
+  status: number;
+  message: string;
+}
+
 type keyserver = {
   key: string;
   server: string;
+}
+type User = null | {
+  first_name: string;
+  middle_name: string;
+  last_name : string;
+  role_id: number;
 }
 @Injectable({
   providedIn: 'root'
@@ -12,8 +23,11 @@ export class LoginService {
   directory_ok: boolean;
   directory: Array<keyserver>;
   the_server: string;
+  uuid:string;
+  user: User;
 
   static directoryServer: string = "http://52.76.215.10/api/directory";
+
   //static directoryServer: string = "http://localhost:8000/api/directory";
 
   constructor(private http: HttpClient) {
@@ -21,6 +35,8 @@ export class LoginService {
     this.directory_ok = false;
     this.directory = [];
     this.getDirectoryInformation();
+    this.uuid = "";
+    this.user = null;
   }
 
   directory_is_ok(): boolean {
@@ -34,13 +50,12 @@ export class LoginService {
       this.directory = JSON.parse(data['result']);
       this.directory_ok = true;
       //this.directory is now an array of {"key":"X", "value":"Y"} objects
-    }, error=>
-    {
+    }, error => {
       console.log(error.statusText)
     })
   }
 
-  login(email: string, password: string) {
+  login(email: string, password: string): Observable<any> {
     // first get the string after the @ sign.
     let key = email.split('@')[1]
     console.log(`key is ${key}`);
@@ -59,17 +74,23 @@ export class LoginService {
     }
     console.log(`Use server: ${this.the_server}.`)
     // We have email and password. We have server. Let's login.
-    let data ={
-      "email": email,
-      "passwd": password
-    }
-    let url = `http://${this.the_server}/api/login`
-    this.http.post(url,data).subscribe(result =>
-    {
+    let options = {
+      headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')
+    };
 
-    }, error=>
-    {
-      console.log(error.statusText)
-    });
+    let body = new URLSearchParams();
+    body.set('email', email);
+    body.set('passwd', password);
+    let url = `http://localhost:8000/api/login`
+    return this.http.post(url, body.toString(), options);
+  }
+  set_uuid(uuid:string){
+    this.uuid = uuid;
+  }
+  set_user(user:any){
+    this.user = user;
+  }
+  save_to_local(){
+
   }
 }
