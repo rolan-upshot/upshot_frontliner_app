@@ -1,1 +1,11 @@
-<p>home works!</p>
+<div>
+  Welcome <b>{{name}}</b>!!
+</div>
+<div *ngIf="show">
+<div ngbDropdown class="d-inline-block">
+  <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle ngDefaultControl name="jDropdown">{{journey_as_string(selected_journey)}}</button>
+  <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+    <button *ngFor="let j of journeys" ngbDropdownItem (click)="sel_journey(j)">{{journey_as_string(j)}}</button>
+  </div>
+</div>
+</div>

@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {LoginService} from "../login.service";
+import {Router} from "@angular/router";
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -11,8 +13,9 @@ export class LoginComponent implements OnInit {
   password: string = "";
   checking: boolean = false;
 
-  constructor(private modalService: NgbModal, private loginService:LoginService) {}
-  ngOnInit(): void {}
+  constructor(private modalService: NgbModal, private loginService:LoginService, private router:Router) {}
+  ngOnInit(): void {
+  }
 
   get_directory_status(): string{
     if (this.loginService.directory_is_ok()){
@@ -44,6 +47,7 @@ export class LoginComponent implements OnInit {
         this.loginService.set_user(user);
         this.loginService.set_uuid(uuid);
         this.loginService.save_to_local();
+        this.router.navigateByUrl("/home")
       }else {
         let details = result['details'];
         console.log(`Login error: ${details}`);

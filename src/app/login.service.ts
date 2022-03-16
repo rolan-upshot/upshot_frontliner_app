@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpClientModule, HttpHeaders} from '@angular/common/http';
 import {Observable} from "rxjs";
+import {ApiService} from "./api.service";
+
 type login_result = {
   status: number;
   message: string;
@@ -14,7 +16,7 @@ type User = null | {
   first_name: string;
   middle_name: string;
   last_name : string;
-  role_id: number;
+  role_id: string ;
 }
 @Injectable({
   providedIn: 'root'
@@ -22,15 +24,15 @@ type User = null | {
 export class LoginService {
   directory_ok: boolean;
   directory: Array<keyserver>;
-  the_server: string;
-  uuid:string;
-  user: User;
+  the_server: null|string;
+  uuid:null|string;
+  user: null| User;
 
   static directoryServer: string = "http://52.76.215.10/api/directory";
 
   //static directoryServer: string = "http://localhost:8000/api/directory";
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private apiService:ApiService) {
     this.the_server = "";
     this.directory_ok = false;
     this.directory = [];
@@ -69,6 +71,7 @@ export class LoginService {
       console.log(`${obj_key}: ${obj_server}`);
       if (key === obj_key) {
         this.the_server = obj_server;
+        this.apiService.set_server(this.the_server);
         break;
       }
     }
@@ -81,16 +84,60 @@ export class LoginService {
     let body = new URLSearchParams();
     body.set('email', email);
     body.set('passwd', password);
-    let url = `http://localhost:8000/api/login`
+    // let url = `http://localhost:8000/api/login`
+    let url = "http://" +  this.the_server + "/api/login"
     return this.http.post(url, body.toString(), options);
   }
   set_uuid(uuid:string){
     this.uuid = uuid;
+    this.apiService.set_uuid(this.uuid);
   }
-  set_user(user:any){
+  set_user(user:User){
     this.user = user;
+
+  }
+  get_user_name(){
+    let fname = this.user?.first_name || " "
+    let lname = this.user?.last_name || " "
+    return  this.user? `` :`${fname} ${lname}`;
   }
   save_to_local(){
+    localStorage.setItem("uuid", this.uuid?this.uuid:"")
+    localStorage.setItem("the_server", this.the_server?this.the_server:"");
+    localStorage.setItem("fname", this.user?.first_name || " "  )
+    localStorage.setItem("mname", this.user?.middle_name|| " "  )
+    localStorage.setItem("lname", this.user?.last_name || " "  )
+    localStorage.setItem("role_id", this.user?.role_id || " "  )
+
+  }
+  clear_local(){
+    localStorage.clear();
+  }
+  has_logged_in(){
+    let uuid = localStorage.getItem("uuid")
+    return uuid !== null;
+  }
+
+  load_from_local(){
+    let uuid = localStorage.getItem("uuid");
+    this.uuid = uuid? uuid: ""
+    this.apiService.set_uuid(this.uuid);
+
+    let the_server = localStorage.getItem("the_server");
+    this.the_server = the_server? the_server: "";
+    this.apiService.set_server(this.the_server);
+
+    let fname = localStorage.getItem("fname" )
+    let mname = localStorage.getItem("mname" )
+    let lname = localStorage.getItem("lname" )
+    let role_id = localStorage.getItem("role_id" )
+    this.user = {
+      first_name: fname? fname: "",
+      middle_name: mname? mname: "",
+      last_name: lname? lname: " ",
+      role_id: role_id? role_id: "1"
+
+    }
 
   }
 }
